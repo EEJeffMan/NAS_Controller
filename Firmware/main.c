@@ -81,7 +81,7 @@
 //
 
 void init_gpio();
-void MemCopy(Uint16 *SourceAddr, Uint16* SourceEndAddr, Uint16* DestAddr);
+
 
 #ifdef CLA_ENABLE
 __interrupt void cla1_isr2(void);
@@ -99,6 +99,10 @@ Uint16 VoltageCLA[NUM_DATA_POINTS];
 //
 // These are defined by the linker file
 //
+
+// Used for running BackGround in flash, and ISR in RAM
+//extern Uint16 *IQfuncsLoadStart, *IQfuncsLoadEnd, *IQfuncsRunStart;
+
 extern Uint16 Cla1funcsLoadStart;
 extern Uint16 Cla1funcsLoadSize;
 extern Uint16 Cla1funcsRunStart;
@@ -170,13 +174,13 @@ void main(void)
 // The  RamfuncsLoadStart, RamfuncsLoadEnd, and RamfuncsRunStart
 // symbols are created by the linker. Refer to the linker files.
 
-//    MemCopy(&RamfuncsLoadStart, &RamfuncsLoadEnd, &RamfuncsRunStart);
+    MemCopy(&RamfuncsLoadStart, &RamfuncsLoadEnd, &RamfuncsRunStart);
 //    MemCopy(&IQfuncsLoadStart, &IQfuncsLoadEnd, &IQfuncsRunStart);
 
 // Call Flash Initialization to setup flash waitstates
 // This function must reside in RAM
 
-//    InitFlash();    // Call the flash wrapper init function
+    InitFlash();    // Call the flash wrapper init function
 
 //#endif //(FLASH)
 
