@@ -104,11 +104,9 @@ void A4(void)  // Spare
 void B1(void)
 //----------------------------------------
 {
-
-//#ifdef LED_ENABLE
-    set_LED(LED_YELLOW, LED_TOGGLE);
-//#endif
-
+    EALLOW;
+    AdcRegs.ADCSOCFRC1.bit.SOC0 = 1;
+    EDIS;
     //-----------------
     //the next time CpuTimer1 'counter' reaches Period value go to B2
     B_Task_Ptr = &B2;

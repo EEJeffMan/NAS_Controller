@@ -74,12 +74,18 @@
 //#define PWM_ENABLE
 #define LED_ENABLE
 #define UART_ENABLE
-//#define TASK_SCHEDULER_ENABLE
+#define TASK_SCHEDULER_ENABLE
+#ifdef ADC_ENABLE
+#define ADC_ARRAY_SIZE  20
+#endif
 
 //
 // Prototype statements
 //
-
+#ifdef ADC_ENABLE
+__interrupt void adcint1_isr(void);
+__interrupt void adcint2_isr(void);
+#endif
 void init_gpio();
 
 
@@ -95,6 +101,25 @@ __interrupt void cla1_isr2(void);
 
 Uint16 ConversionCount;
 Uint16 VoltageCLA[NUM_DATA_POINTS];
+
+#ifdef ADC_ENABLE
+Uint16 adc_array_A0[ADC_ARRAY_SIZE];
+Uint16 adc_array_B0[ADC_ARRAY_SIZE];
+Uint16 adc_array_A1[ADC_ARRAY_SIZE];
+Uint16 adc_array_B1[ADC_ARRAY_SIZE];
+Uint16 adc_array_A2[ADC_ARRAY_SIZE];
+Uint16 adc_array_B2[ADC_ARRAY_SIZE];
+Uint16 adc_array_A3[ADC_ARRAY_SIZE];
+Uint16 adc_array_B3[ADC_ARRAY_SIZE];
+Uint16 adc_array_A4[ADC_ARRAY_SIZE];
+Uint16 adc_array_B4[ADC_ARRAY_SIZE];
+Uint16 adc_array_A7[ADC_ARRAY_SIZE];
+Uint16 adc_array_B7[ADC_ARRAY_SIZE];
+Uint16 adc_array_A6[ADC_ARRAY_SIZE];
+Uint16 adc_array_B6[ADC_ARRAY_SIZE];
+Uint16 adc_array_A5[ADC_ARRAY_SIZE];
+Uint16 adc_index = 0;
+#endif
 
 //
 // These are defined by the linker file
@@ -169,6 +194,13 @@ void main(void)
     //
     InitPieVectTable();
 
+#ifdef ADC_ENABLE
+    EALLOW;
+    PieVectTable.ADCINT1 = &adcint1_isr;
+    PieVectTable.ADCINT2 = &adcint2_isr;
+    EDIS;
+#endif
+
 //#ifdef FLASH
 // Copy time critical code and Flash setup code to RAM
 // The  RamfuncsLoadStart, RamfuncsLoadEnd, and RamfuncsRunStart
@@ -199,7 +231,7 @@ void main(void)
 #ifdef ADC_ENABLE
     InitAdc();         // For this example, init the ADC
     InitAdcAio();
-    AdcOffsetSelfCal();
+    //AdcOffsetSelfCal();
 #endif
 
     //
@@ -703,6 +735,52 @@ void scia_msg(char * msg)
         scia_xmit(msg[i]);
         i++;
     }
+}
+#endif
+
+#ifdef ADC_ENABLE
+__interrupt void
+adcint1_isr(void)
+{
+    // save ADCs to arrays: A0/B0, A1/B1, A2/B2, A3/B3
+
+    adc_array_A0[adc_index] = AdcResult.ADCRESULT0;
+    adc_array_B0[adc_index] = AdcResult.ADCRESULT1;
+    adc_array_A1[adc_index] = AdcResult.ADCRESULT2;
+    adc_array_B1[adc_index] = AdcResult.ADCRESULT3;
+    adc_array_A2[adc_index] = AdcResult.ADCRESULT4;
+    adc_array_B2[adc_index] = AdcResult.ADCRESULT5;
+    adc_array_A3[adc_index] = AdcResult.ADCRESULT6;
+    adc_array_B3[adc_index] = AdcResult.ADCRESULT7;
+
+    set_LED(LED_YELLOW, LED_TOGGLE);
+    PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
+}
+
+__interrupt void
+adcint2_isr(void)
+{
+    // save ADCs to arrays: A4/B4, A5, A6/B6, A7/B7
+
+    adc_array_A4[adc_index] = AdcResult.ADCRESULT8;
+    adc_array_B4[adc_index] = AdcResult.ADCRESULT9;
+    adc_array_A7[adc_index] = AdcResult.ADCRESULT10;
+    adc_array_B7[adc_index] = AdcResult.ADCRESULT11;
+    adc_array_A6[adc_index] = AdcResult.ADCRESULT12;
+    adc_array_B6[adc_index] = AdcResult.ADCRESULT13;
+    adc_array_A5[adc_index] = AdcResult.ADCRESULT14;
+
+    if (adc_index >= (ADC_ARRAY_SIZE-1))
+    {
+        adc_index = 0;
+    }
+    else
+    {
+        adc_index++;
+    }
+
+    set_LED(LED_RED, LED_TOGGLE);
+    PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
 }
 #endif
 
