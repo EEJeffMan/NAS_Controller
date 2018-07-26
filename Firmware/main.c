@@ -85,7 +85,7 @@
 #ifdef ADC_ENABLE
 void configure_adc();
 __interrupt void adcint1_isr(void);
-//__interrupt void adcint2_isr(void);
+__interrupt void adcint2_isr(void);
 #endif
 void init_gpio();
 
@@ -104,22 +104,22 @@ Uint16 ConversionCount;
 Uint16 VoltageCLA[NUM_DATA_POINTS];
 
 #ifdef ADC_ENABLE
-Uint16 adc_array_A0[ADC_ARRAY_SIZE];
-Uint16 adc_array_B0[ADC_ARRAY_SIZE];
-Uint16 adc_array_A1[ADC_ARRAY_SIZE];
-Uint16 adc_array_B1[ADC_ARRAY_SIZE];
-Uint16 adc_array_A2[ADC_ARRAY_SIZE];
-Uint16 adc_array_B2[ADC_ARRAY_SIZE];
-Uint16 adc_array_A3[ADC_ARRAY_SIZE];
-Uint16 adc_array_B3[ADC_ARRAY_SIZE];
-Uint16 adc_array_A4[ADC_ARRAY_SIZE];
-Uint16 adc_array_B4[ADC_ARRAY_SIZE];
-Uint16 adc_array_A7[ADC_ARRAY_SIZE];
-Uint16 adc_array_B7[ADC_ARRAY_SIZE];
-Uint16 adc_array_A6[ADC_ARRAY_SIZE];
-Uint16 adc_array_B6[ADC_ARRAY_SIZE];
-Uint16 adc_array_A5[ADC_ARRAY_SIZE];
-Uint16 adc_index = 0;
+volatile Uint16 adc_array_A0[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_B0[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_A1[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_B1[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_A2[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_B2[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_A3[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_B3[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_A4[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_B4[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_A7[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_B7[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_A6[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_B6[ADC_ARRAY_SIZE];
+volatile Uint16 adc_array_A5[ADC_ARRAY_SIZE];
+volatile Uint16 adc_index = 0;
 #endif
 
 //
@@ -200,7 +200,7 @@ void main(void)
 #ifdef ADC_ENABLE
     EALLOW;
     PieVectTable.ADCINT1 = &adcint1_isr;
-//    PieVectTable.ADCINT2 = &adcint2_isr;
+    PieVectTable.ADCINT2 = &adcint2_isr;
     EDIS;
 #endif
 
@@ -249,7 +249,11 @@ void main(void)
 #endif
     //IER |= M_INT11;                     // Enable CPU Interrupt 11
 #ifdef ADC_ENABLE
+    // ADCINT1: INT1.1
+    // ADCINT2: INT1.2
     PieCtrlRegs.PIEIER1.bit.INTx1 = 1;  // Enable INT 1.1 in the PIE
+    PieCtrlRegs.PIEIER1.bit.INTx2 = 1;  // Enable INT 1.2 in the PIE
+
     IER |= M_INT1;      // Enable CPU INT1 for ADCINT1,ADCINT2,ADCINT9,TripZone
 #endif
     EINT;                               // Enable Global interrupt INTM
@@ -883,27 +887,6 @@ void configure_adc()
      *  -ADCINT2... toggle red LED and save ADC data to array
      *
      *
-     *  Simplify ADC sample scheme:
-     *  -No INTs
-     *  -No SIMULENs
-     *  -All round robin
-     *  -All SW trigger
-     *
-     *  SOC0:   A0 Vaux V
-     *  SOC1:   A1 5V2A V
-     *  SOC2:   A2 5V2B V
-     *  SOC3:   A3 SEPIC V
-     *  SOC4:   A4 BATT V
-     *  SOC5:   A5 Internal Temp
-     *  SOC6:   A6 Vin V
-     *  SOC7:   A7 Vcc V
-     *  SOC8:   B0 Vaux I
-     *  SOC9:   B1 5V2A I
-     *  SOC10:  B2 5V2B I
-     *  SOC11:  B3 SEPIC I
-     *  SOC12:  B4 BATT I
-     *  SOC13:  B6 VIN I
-     *  SOC14:  B7 BATT Temp
      *
      */
 
@@ -917,39 +900,48 @@ void configure_adc()
 
     AdcRegs.INTSEL1N2.bit.INT1CONT = 1;         // New interrupt pulse will begin new INT
     AdcRegs.INTSEL1N2.bit.INT1E = 1;            // INT enable
-    //AdcRegs.INTSEL1N2.bit.INT1SEL = 0x06;       // EOC6
-    AdcRegs.INTSEL1N2.bit.INT1SEL = 0x0E;       // EOC14
-    AdcRegs.INTSEL1N2.bit.INT2CONT = 0;         // No further INT pulses until cleared
-    //AdcRegs.INTSEL1N2.bit.INT2E = 1;            // INT enable
-    AdcRegs.INTSEL1N2.bit.INT2E = 0;            // INT disable
+    AdcRegs.INTSEL1N2.bit.INT1SEL = 0x06;       // EOC6
+    //AdcRegs.INTSEL1N2.bit.INT1SEL = 0x0E;       // EOC14
+    AdcRegs.INTSEL1N2.bit.INT2CONT = 1;         // No further INT pulses until cleared
+    AdcRegs.INTSEL1N2.bit.INT2E = 1;            // INT enable
     AdcRegs.INTSEL1N2.bit.INT2SEL = 0x0E;       // EOC14
+    //AdcRegs.INTSEL1N2.bit.INT2SEL = 0x08;       // EOC8
 
-    //AdcRegs.SOCPRICTL.bit.SOCPRIORITY = 0x08;   // SOC0-7 are high priority, SOC8+ are round robin
-    AdcRegs.SOCPRICTL.bit.SOCPRIORITY = 0;      // All SOCs are round robin
+    AdcRegs.SOCPRICTL.bit.SOCPRIORITY = 0x08;   // SOC0-7 are high priority, SOC8+ are round robin
+    //AdcRegs.SOCPRICTL.bit.SOCPRIORITY = 0;      // All SOCs are round robin
 
-    /*AdcRegs.ADCSAMPLEMODE.bit.SIMULEN0 = 1;     // SOC0/1 for A0/B0
+    AdcRegs.ADCSAMPLEMODE.bit.SIMULEN0 = 1;     // SOC0/1 for A0/B0
     AdcRegs.ADCSAMPLEMODE.bit.SIMULEN2 = 1;     // SOC2/3 for A1/B1
     AdcRegs.ADCSAMPLEMODE.bit.SIMULEN4 = 1;     // SOC4/5 for A2/B2
     AdcRegs.ADCSAMPLEMODE.bit.SIMULEN6 = 1;     // SOC6/7 for A3/B3
     AdcRegs.ADCSAMPLEMODE.bit.SIMULEN8 = 1;     // SOC8/9 for A4/B4
     AdcRegs.ADCSAMPLEMODE.bit.SIMULEN10 = 1;    // SOC10/11 for A7/B7
-    AdcRegs.ADCSAMPLEMODE.bit.SIMULEN12 = 1;    // SOC12/13 for A6/B6*/
+    AdcRegs.ADCSAMPLEMODE.bit.SIMULEN12 = 1;    // SOC12/13 for A6/B6
 
-    AdcRegs.ADCSAMPLEMODE.all = 0;              // No simultaneous samples
+    //AdcRegs.ADCSAMPLEMODE.all = 0;              // No simultaneous samples
 
     AdcRegs.ADCINTSOCSEL1.all = 0;              // No ADCINT trigger, use TRIGSEL to define trigger
-    AdcRegs.ADCINTSOCSEL2.all = 0;              // No ADCINT trigger, use TRIGSeL to define trigger
+    //AdcRegs.ADCINTSOCSEL2.all = 0;              // No ADCINT trigger, use TRIGSeL to define trigger
 
-    /*AdcRegs.ADCINTSOCSEL2.bit.SOC8 = 1;        // ADCINT1
+    AdcRegs.ADCINTSOCSEL2.bit.SOC8 = 1;        // ADCINT1
     AdcRegs.ADCINTSOCSEL2.bit.SOC9 = 1;        // ADCINT1
     AdcRegs.ADCINTSOCSEL2.bit.SOC10 = 1;       // ADCINT1
     AdcRegs.ADCINTSOCSEL2.bit.SOC11 = 1;       // ADCINT1
     AdcRegs.ADCINTSOCSEL2.bit.SOC12 = 1;       // ADCINT1
     AdcRegs.ADCINTSOCSEL2.bit.SOC13 = 1;       // ADCINT1
     AdcRegs.ADCINTSOCSEL2.bit.SOC14 = 1;       // ADCINT1
-    AdcRegs.ADCINTSOCSEL2.bit.SOC15 = 0;       // No ADCINT trigger*/
 
-    /*AdcRegs.ADCSOC0CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
+    /*AdcRegs.ADCINTSOCSEL2.bit.SOC8 = 0;
+    AdcRegs.ADCINTSOCSEL2.bit.SOC9 = 0;
+    AdcRegs.ADCINTSOCSEL2.bit.SOC10 = 0;
+    AdcRegs.ADCINTSOCSEL2.bit.SOC11 = 0;
+    AdcRegs.ADCINTSOCSEL2.bit.SOC12 = 0;
+    AdcRegs.ADCINTSOCSEL2.bit.SOC13 = 0;
+    AdcRegs.ADCINTSOCSEL2.bit.SOC14 = 0;*/
+
+    AdcRegs.ADCINTSOCSEL2.bit.SOC15 = 0;       // No ADCINT trigger
+
+    AdcRegs.ADCSOC0CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
     AdcRegs.ADCSOC0CTL.bit.CHSEL = 0;          // A0/B0
     //AdcRegs.ADCSOC0CTL.bit.TRIGSEL = 0x05;     // ePWM1 ADCSOCA
     AdcRegs.ADCSOC0CTL.bit.TRIGSEL = 0;        // SW trigger
@@ -983,9 +975,9 @@ void configure_adc()
 
     AdcRegs.ADCSOC14CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
     AdcRegs.ADCSOC14CTL.bit.CHSEL = 5;          // A5
-    AdcRegs.ADCSOC14CTL.bit.TRIGSEL = 0;        // SW trig only (overridden by ADCINTSOCSEL2 register)*/
+    AdcRegs.ADCSOC14CTL.bit.TRIGSEL = 0;        // SW trig only (overridden by ADCINTSOCSEL2 register)
 
-    AdcRegs.ADCSOC0CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
+/*    AdcRegs.ADCSOC0CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
     AdcRegs.ADCSOC0CTL.bit.CHSEL = 0;          // A0
     AdcRegs.ADCSOC0CTL.bit.TRIGSEL = 0;        // SW trigger
 
@@ -1043,7 +1035,7 @@ void configure_adc()
 
     AdcRegs.ADCSOC14CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
     AdcRegs.ADCSOC14CTL.bit.CHSEL = 0x0F;          // B7
-    AdcRegs.ADCSOC14CTL.bit.TRIGSEL = 0;        // SW trigger
+    AdcRegs.ADCSOC14CTL.bit.TRIGSEL = 0;        // SW trigger*/
 
     EDIS;
 }
@@ -1053,16 +1045,16 @@ adcint1_isr(void)
 {
     // save ADCs to arrays: A0/B0, A1/B1, A2/B2, A3/B3
 
-   /* adc_array_A0[adc_index] = AdcResult.ADCRESULT0;
+    adc_array_A0[adc_index] = AdcResult.ADCRESULT0;
     adc_array_B0[adc_index] = AdcResult.ADCRESULT1;
     adc_array_A1[adc_index] = AdcResult.ADCRESULT2;
     adc_array_B1[adc_index] = AdcResult.ADCRESULT3;
     adc_array_A2[adc_index] = AdcResult.ADCRESULT4;
     adc_array_B2[adc_index] = AdcResult.ADCRESULT5;
     adc_array_A3[adc_index] = AdcResult.ADCRESULT6;
-    adc_array_B3[adc_index] = AdcResult.ADCRESULT7;*/
+    adc_array_B3[adc_index] = AdcResult.ADCRESULT7;
 
-    adc_array_A0[adc_index] = AdcResult.ADCRESULT0;
+    /*adc_array_A0[adc_index] = AdcResult.ADCRESULT0;
     adc_array_A1[adc_index] = AdcResult.ADCRESULT1;
     adc_array_A2[adc_index] = AdcResult.ADCRESULT2;
     adc_array_A3[adc_index] = AdcResult.ADCRESULT3;
@@ -1076,16 +1068,16 @@ adcint1_isr(void)
     adc_array_B3[adc_index] = AdcResult.ADCRESULT11;
     adc_array_B4[adc_index] = AdcResult.ADCRESULT12;
     adc_array_B6[adc_index] = AdcResult.ADCRESULT13;
-    adc_array_B7[adc_index] = AdcResult.ADCRESULT14;
+    adc_array_B7[adc_index] = AdcResult.ADCRESULT14;*/
 
-    if (adc_index >= (ADC_ARRAY_SIZE-1))
+    /*if (adc_index >= (ADC_ARRAY_SIZE-1))
     {
         adc_index = 0;
     }
     else
     {
         adc_index++;
-    }
+    }*/
 
     set_LED(LED_YELLOW, LED_TOGGLE);
 
@@ -1093,7 +1085,7 @@ adcint1_isr(void)
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
 }
 
-/*__interrupt void
+__interrupt void
 adcint2_isr(void)
 {
     // save ADCs to arrays: A4/B4, A5, A6/B6, A7/B7
@@ -1116,8 +1108,10 @@ adcint2_isr(void)
     }
 
     set_LED(LED_RED, LED_TOGGLE);
+
+    AdcRegs.ADCINTFLGCLR.bit.ADCINT2 = 1;
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
-}*/
+}
 #endif
 
 //

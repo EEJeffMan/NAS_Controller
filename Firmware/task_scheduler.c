@@ -113,13 +113,13 @@ void B1(void)
     AdcRegs.ADCSOCFRC1.bit.SOC5 = 1;
     AdcRegs.ADCSOCFRC1.bit.SOC6 = 1;
     AdcRegs.ADCSOCFRC1.bit.SOC7 = 1;
-    AdcRegs.ADCSOCFRC1.bit.SOC8 = 1;
+    /*AdcRegs.ADCSOCFRC1.bit.SOC8 = 1;
     AdcRegs.ADCSOCFRC1.bit.SOC9 = 1;
     AdcRegs.ADCSOCFRC1.bit.SOC10 = 1;
     AdcRegs.ADCSOCFRC1.bit.SOC11 = 1;
     AdcRegs.ADCSOCFRC1.bit.SOC12 = 1;
     AdcRegs.ADCSOCFRC1.bit.SOC13 = 1;
-    AdcRegs.ADCSOCFRC1.bit.SOC14 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC14 = 1;*/
     EDIS;
     //-----------------
     //the next time CpuTimer1 'counter' reaches Period value go to B2
@@ -131,6 +131,16 @@ void B1(void)
 void B2(void) // B2
 //----------------------------------------
 {
+
+   /* EALLOW;
+    AdcRegs.ADCSOCFRC1.bit.SOC8 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC9 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC10 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC11 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC12 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC13 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC14 = 1;
+    EDIS;*/
 
     //-----------------
     //the next time CpuTimer1 'counter' reaches Period value go to B3
