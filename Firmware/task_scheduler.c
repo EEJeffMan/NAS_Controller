@@ -106,6 +106,20 @@ void B1(void)
 {
     EALLOW;
     AdcRegs.ADCSOCFRC1.bit.SOC0 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC1 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC2 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC3 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC4 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC5 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC6 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC7 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC8 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC9 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC10 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC11 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC12 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC13 = 1;
+    AdcRegs.ADCSOCFRC1.bit.SOC14 = 1;
     EDIS;
     //-----------------
     //the next time CpuTimer1 'counter' reaches Period value go to B2
