@@ -900,25 +900,26 @@ void configure_adc()
 
     AdcRegs.INTSEL1N2.bit.INT1CONT = 1;         // New interrupt pulse will begin new INT
     AdcRegs.INTSEL1N2.bit.INT1E = 1;            // INT enable
-    AdcRegs.INTSEL1N2.bit.INT1SEL = 0x06;       // EOC6
-    //AdcRegs.INTSEL1N2.bit.INT1SEL = 0x0E;       // EOC14
+    //AdcRegs.INTSEL1N2.bit.INT1SEL = 0x06;       // EOC6 when in simultaneous mode
+    AdcRegs.INTSEL1N2.bit.INT1SEL = 0x07;       // EOC7 when not in simultaneous mode
+    //AdcRegs.INTSEL1N2.bit.INT1SEL = 0x0E;       // EOC14, the last round robin conversion
     AdcRegs.INTSEL1N2.bit.INT2CONT = 1;         // No further INT pulses until cleared
     AdcRegs.INTSEL1N2.bit.INT2E = 1;            // INT enable
-    AdcRegs.INTSEL1N2.bit.INT2SEL = 0x0E;       // EOC14
+    AdcRegs.INTSEL1N2.bit.INT2SEL = 0x0E;       // EOC14, the last round robin conversion
     //AdcRegs.INTSEL1N2.bit.INT2SEL = 0x08;       // EOC8
 
     AdcRegs.SOCPRICTL.bit.SOCPRIORITY = 0x08;   // SOC0-7 are high priority, SOC8+ are round robin
     //AdcRegs.SOCPRICTL.bit.SOCPRIORITY = 0;      // All SOCs are round robin
 
-    AdcRegs.ADCSAMPLEMODE.bit.SIMULEN0 = 1;     // SOC0/1 for A0/B0
+    /*AdcRegs.ADCSAMPLEMODE.bit.SIMULEN0 = 1;     // SOC0/1 for A0/B0
     AdcRegs.ADCSAMPLEMODE.bit.SIMULEN2 = 1;     // SOC2/3 for A1/B1
     AdcRegs.ADCSAMPLEMODE.bit.SIMULEN4 = 1;     // SOC4/5 for A2/B2
     AdcRegs.ADCSAMPLEMODE.bit.SIMULEN6 = 1;     // SOC6/7 for A3/B3
     AdcRegs.ADCSAMPLEMODE.bit.SIMULEN8 = 1;     // SOC8/9 for A4/B4
     AdcRegs.ADCSAMPLEMODE.bit.SIMULEN10 = 1;    // SOC10/11 for A7/B7
-    AdcRegs.ADCSAMPLEMODE.bit.SIMULEN12 = 1;    // SOC12/13 for A6/B6
+    AdcRegs.ADCSAMPLEMODE.bit.SIMULEN12 = 1;*/    // SOC12/13 for A6/B6
 
-    //AdcRegs.ADCSAMPLEMODE.all = 0;              // No simultaneous samples
+    AdcRegs.ADCSAMPLEMODE.all = 0;              // No simultaneous samples
 
     AdcRegs.ADCINTSOCSEL1.all = 0;              // No ADCINT trigger, use TRIGSEL to define trigger
     //AdcRegs.ADCINTSOCSEL2.all = 0;              // No ADCINT trigger, use TRIGSeL to define trigger
@@ -941,7 +942,7 @@ void configure_adc()
 
     AdcRegs.ADCINTSOCSEL2.bit.SOC15 = 0;       // No ADCINT trigger
 
-    AdcRegs.ADCSOC0CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
+    /*AdcRegs.ADCSOC0CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
     AdcRegs.ADCSOC0CTL.bit.CHSEL = 0;          // A0/B0
     //AdcRegs.ADCSOC0CTL.bit.TRIGSEL = 0x05;     // ePWM1 ADCSOCA
     AdcRegs.ADCSOC0CTL.bit.TRIGSEL = 0;        // SW trigger
@@ -975,67 +976,67 @@ void configure_adc()
 
     AdcRegs.ADCSOC14CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
     AdcRegs.ADCSOC14CTL.bit.CHSEL = 5;          // A5
-    AdcRegs.ADCSOC14CTL.bit.TRIGSEL = 0;        // SW trig only (overridden by ADCINTSOCSEL2 register)
+    AdcRegs.ADCSOC14CTL.bit.TRIGSEL = 0;*/        // SW trig only (overridden by ADCINTSOCSEL2 register)
 
-/*    AdcRegs.ADCSOC0CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
+    AdcRegs.ADCSOC0CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
     AdcRegs.ADCSOC0CTL.bit.CHSEL = 0;          // A0
     AdcRegs.ADCSOC0CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC1CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC1CTL.bit.CHSEL = 0x01;          // A1
+    AdcRegs.ADCSOC1CTL.bit.CHSEL = 0x08;       // B0
     AdcRegs.ADCSOC1CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC2CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC2CTL.bit.CHSEL = 0x02;          // A2
+    AdcRegs.ADCSOC2CTL.bit.CHSEL = 0x01;       // A1
     AdcRegs.ADCSOC2CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC3CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC3CTL.bit.CHSEL = 0x03;          // A3
+    AdcRegs.ADCSOC3CTL.bit.CHSEL = 0x09;       // B1
     AdcRegs.ADCSOC3CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC4CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC4CTL.bit.CHSEL = 0x04;          // A4
+    AdcRegs.ADCSOC4CTL.bit.CHSEL = 0x02;       // A2
     AdcRegs.ADCSOC4CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC5CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC5CTL.bit.CHSEL = 0x05;          // A5
+    AdcRegs.ADCSOC5CTL.bit.CHSEL = 0x0A;       // B2
     AdcRegs.ADCSOC5CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC6CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC6CTL.bit.CHSEL = 0x06;          // A6
+    AdcRegs.ADCSOC6CTL.bit.CHSEL = 0x03;       // A3
     AdcRegs.ADCSOC6CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC7CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC7CTL.bit.CHSEL = 0x07;          // A7
+    AdcRegs.ADCSOC7CTL.bit.CHSEL = 0x0B;       // B3
     AdcRegs.ADCSOC7CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC8CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC8CTL.bit.CHSEL = 0x08;          // B0
+    AdcRegs.ADCSOC8CTL.bit.CHSEL = 0x04;       // A4
     AdcRegs.ADCSOC8CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC9CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC9CTL.bit.CHSEL = 0x09;          // B1
+    AdcRegs.ADCSOC9CTL.bit.CHSEL = 0x0C;       // B4
     AdcRegs.ADCSOC9CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC10CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC10CTL.bit.CHSEL = 0x0A;          // B2
+    AdcRegs.ADCSOC10CTL.bit.CHSEL = 0x0F;       // B7
     AdcRegs.ADCSOC10CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC11CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC11CTL.bit.CHSEL = 0x0B;          // B3
+    AdcRegs.ADCSOC11CTL.bit.CHSEL = 0x06;       // A6
     AdcRegs.ADCSOC11CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC12CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC12CTL.bit.CHSEL = 0x0C;          // B4
+    AdcRegs.ADCSOC12CTL.bit.CHSEL = 0x0E;       // B6
     AdcRegs.ADCSOC12CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC13CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC13CTL.bit.CHSEL = 0x0E;          // B6
+    AdcRegs.ADCSOC13CTL.bit.CHSEL = 0x07;       // A7
     AdcRegs.ADCSOC13CTL.bit.TRIGSEL = 0;        // SW trigger
 
     AdcRegs.ADCSOC14CTL.bit.ACQPS = 0x06;       // 7 ADCCLKs
-    AdcRegs.ADCSOC14CTL.bit.CHSEL = 0x0F;          // B7
-    AdcRegs.ADCSOC14CTL.bit.TRIGSEL = 0;        // SW trigger*/
+    AdcRegs.ADCSOC14CTL.bit.CHSEL = 0x05;       // A5
+    AdcRegs.ADCSOC14CTL.bit.TRIGSEL = 0;        // SW trigger
 
     EDIS;
 }
