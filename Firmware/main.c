@@ -71,7 +71,7 @@
 
 //#define CLA_ENABLE
 #define ADC_ENABLE
-//#define PWM_ENABLE
+#define PWM_ENABLE
 #define LED_ENABLE
 #define UART_ENABLE
 #define TASK_SCHEDULER_ENABLE
@@ -329,7 +329,7 @@ void main(void)
     // 5V2 A & B: 5.2Vout, duty cycle = 5.2/12 = 43.3%... period = 240, CMPA = 104
     // SEPIC: 6Vout, duty cycle = (vo/vi) / (1+vo/vi) = (6/12)/(1+6/12) = 33.3%... period = 240, CMPA = 80
 
-    EPwm1Regs.CMPA.half.CMPA = 110;
+    EPwm1Regs.CMPA.half.CMPA = 80;//110;     80/240 = 33.3%... 12*0.333 ~= 4V
     EPwm2Regs.CMPA.half.CMPA = 104;
     EPwm3Regs.CMPA.half.CMPA = 104;
     EPwm4Regs.CMPA.half.CMPA = 80;
