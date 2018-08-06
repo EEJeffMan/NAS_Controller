@@ -1,2 +1,4 @@
 /Firmware/Debug/*
 /Firmware/.launches/*
+/Spice/*.raw
+/Spice/*.log
