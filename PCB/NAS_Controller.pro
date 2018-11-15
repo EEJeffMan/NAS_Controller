@@ -1,4 +1,4 @@
-update=7/5/2018 11:51:19 PM
+update=11/15/2018 1:09:04 AM
 version=1
 last_client=kicad
 [pcbnew]
@@ -23,8 +23,6 @@ ModuleOutlineThickness=0.150000000000
 [cvpcb]
 version=1
 NetIExt=net
-[general]
-version=1
 [eeschema]
 version=1
 LibDir=C:/KiCAD/share/kicad/library;C:/KiCAD/digikey-kicad-library-master/digikey-symbols
@@ -292,3 +290,5 @@ NetFmtName=Pcbnew
 SpiceForceRefPrefix=0
 SpiceUseNetNumbers=0
 LabSize=60
+[general]
+version=1
