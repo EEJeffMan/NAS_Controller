@@ -257,10 +257,10 @@ EELAYER 25 0
 EELAYER END
 $Descr A 11000 8500
 encoding utf-8
-Sheet 1 11
+Sheet 1 12
 Title "NAS Controller"
 Date "2018-06-12"
-Rev "01"
+Rev "02"
 Comp ""
 Comment1 ""
 Comment2 ""
@@ -326,5 +326,11 @@ S 7650 2800 850  450
 U 5B27BC60
 F0 "SEPIC" 60
 F1 "SEPIC.sch" 60
+$EndSheet
+$Sheet
+S 7650 3500 850  450 
+U 5BF4E0C2
+F0 "Electric_Load" 60
+F1 "Eload.sch" 60
 $EndSheet
 $EndSCHEMATC

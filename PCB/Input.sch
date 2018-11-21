@@ -257,10 +257,10 @@ EELAYER 25 0
 EELAYER END
 $Descr A 11000 8500
 encoding utf-8
-Sheet 2 11
+Sheet 2 12
 Title "Input"
 Date "2018-06-12"
-Rev "01"
+Rev "02"
 Comp ""
 Comment1 ""
 Comment2 ""
