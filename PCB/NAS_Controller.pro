@@ -1,4 +1,4 @@
-update=11/30/2018 2:20:05 AM
+update=12/5/2018 7:07:58 AM
 version=1
 last_client=kicad
 [pcbnew]
@@ -280,6 +280,7 @@ LibName250=C:/KiCAD/Libraries/TMS320F28035PAGS
 LibName251=C:/KiCAD/Libraries/1-1825027-1
 LibName252=C:/KiCAD/Libraries/105133-0011
 LibName253=C:/KiCAD/Libraries/614008235023
+LibName254=C:/KiCAD/Libraries/CL-SB-23A-01
 [schematic_editor]
 version=1
 PageLayoutDescrFile=
