@@ -14,14 +14,14 @@ void init_smps()
 
     /*
      * HWPWM pins:
-     * GPIO0, 1A: PWM_VAUX
+     * GPIO1, 1B: PWM_ELOAD
      * GPIO2, 2A: PWM_5V2_A
      * GPIO4, 3A: PWM_5V2_B
      * GPIO6, 4A: PWM_SEPIC
      */
 
-    GpioCtrlRegs.GPAPUD.bit.GPIO0 = 1;    // Disable pull-up on GPIO0 (EPWM1A)
-    GpioCtrlRegs.GPAMUX1.bit.GPIO0 = 1;   // Configure GPIO0 as EPWM1A
+    GpioCtrlRegs.GPAPUD.bit.GPIO1 = 1;    // Disable pull-up on GPIO1 (EPWM1B)
+    GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;   // Configure GPIO1 as EPWM1B
     GpioCtrlRegs.GPAPUD.bit.GPIO2 = 1;    // Disable pull-up on GPIO2 (EPWM2A)
     GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 1;   // Configure GPIO2 as EPWM2A
     GpioCtrlRegs.GPAPUD.bit.GPIO4 = 1;    // Disable pull-up on GPIO4 (EPWM3A)
@@ -85,10 +85,10 @@ void init_smps()
      *
      */
 
-    // VAUX
+    // ELOAD
 
     EPwm1Regs.TBCTL.bit.FREE_SOFT = 1;      // allow free run when CPU halted
-    EPwm1Regs.TBPRD = VAUX_PERIOD;
+    EPwm1Regs.TBPRD = ELOAD_PERIOD;
     //EPwm1Regs.TBPRDHR =
     EPwm1Regs.CMPA.half.CMPA = 0;            //set to 0 initially
     //EPwm1Regs.CMPA.half.CMPAHR = (1 << 8);  // initialize HRPWM extension

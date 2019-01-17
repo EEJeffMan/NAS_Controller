@@ -393,10 +393,10 @@ void main(void)
     // 5V2 A & B: 5.2Vout, duty cycle = 5.2/12 = 43.3%... period = 240, CMPA = 104
     // SEPIC: 6Vout, duty cycle = (vo/vi) / (1+vo/vi) = (6/12)/(1+6/12) = 33.3%... period = 240, CMPA = 80
 
-    EPwm1Regs.CMPA.half.CMPA = 667;//267;//133;//80;//110;     80/240 = 33.3%... 12*0.333 ~= 4V
-    EPwm2Regs.CMPA.half.CMPA = 133;//104;
-    EPwm3Regs.CMPA.half.CMPA = 133;//104;
-    EPwm4Regs.CMPA.half.CMPA = 80;
+    EPwm1Regs.CMPA.half.CMPA = 3000;    // 3000/6000 = 50% duty cycle @ 10kHz
+    EPwm2Regs.CMPA.half.CMPA = 30;      // 30/60 = 50% duty cycle @ 1MHz
+    EPwm3Regs.CMPA.half.CMPA = 30;
+    EPwm4Regs.CMPA.half.CMPA = 80;      // 80/240 = 33.3% @ 250kHz
 
     EDIS;
 #endif
@@ -406,7 +406,7 @@ void main(void)
     // Timing sync for background loops
     // Timer period definitions found in PeripheralHeaderIncludes.h
     CpuTimer0Regs.PRD.all = mSec5;      // A tasks
-    CpuTimer1Regs.PRD.all = mSec50; // B tasks
+    CpuTimer1Regs.PRD.all = mSec50;     // B tasks
 
     // Tasks State-machine init
     Alpha_State_Ptr = &A0;
@@ -495,11 +495,17 @@ void init_gpio()
     EALLOW;
 #ifdef PWM_ENABLE
     //--------------------------------------------------------------------------------------
-    //  GPIO-00 - PIN FUNCTION = PWM1A (Vaux)
+    //  GPIO-00 - PIN FUNCTION = PWM1A (was Vaux, now TP2)
         GpioCtrlRegs.GPAMUX1.bit.GPIO0 = 1;     // 0=GPIO,  1=EPWM1A,  2=Resv,  3=Resv
     //  GpioCtrlRegs.GPADIR.bit.GPIO0 = 1;      // 1=OUTput,  0=INput
     //  GpioDataRegs.GPACLEAR.bit.GPIO0 = 1;    // uncomment if --> Set Low initially
     //  GpioDataRegs.GPASET.bit.GPIO0 = 1;      // uncomment if --> Set High initially
+    //--------------------------------------------------------------------------------------
+    //  GPIO-01 - PIN FUNCTION = ELOAD_PWM
+        GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;     // 0=GPIO,  1=EPWM1B,  2=Resv,  3=COMP1OUT
+    //  GpioCtrlRegs.GPADIR.bit.GPIO1 = 1;      // 1=OUTput,  0=INput
+    //  GpioDataRegs.GPACLEAR.bit.GPIO1 = 1;    // uncomment if --> Set Low initially
+    //  GpioDataRegs.GPASET.bit.GPIO1 = 1;      // uncomment if --> Set High initially
 #else
     //--------------------------------------------------------------------------------------
     //  GPIO-00 - PIN FUNCTION = PWM1A (Vaux)
@@ -507,13 +513,13 @@ void init_gpio()
         GpioCtrlRegs.GPADIR.bit.GPIO0 = 0;      // 1=OUTput,  0=INput
     //  GpioDataRegs.GPACLEAR.bit.GPIO0 = 1;    // uncomment if --> Set Low initially
     //  GpioDataRegs.GPASET.bit.GPIO0 = 1;      // uncomment if --> Set High initially
-#endif
     //--------------------------------------------------------------------------------------
-    //  GPIO-01 - PIN FUNCTION = TP6
+    //  GPIO-01 - PIN FUNCTION = ELOAD_PWM
         GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 0;     // 0=GPIO,  1=EPWM1B,  2=Resv,  3=COMP1OUT
         GpioCtrlRegs.GPADIR.bit.GPIO1 = 0;      // 1=OUTput,  0=INput
     //  GpioDataRegs.GPACLEAR.bit.GPIO1 = 1;    // uncomment if --> Set Low initially
     //  GpioDataRegs.GPASET.bit.GPIO1 = 1;      // uncomment if --> Set High initially
+#endif
 #ifdef PWM_ENABLE
     //--------------------------------------------------------------------------------------
     //  GPIO-02 - PIN FUNCTION = PWM2A (5V2_A)
@@ -720,10 +726,10 @@ void init_gpio()
     //  GpioDataRegs.GPACLEAR.bit.GPIO29 = 1;   // uncomment if --> Set Low initially
     //  GpioDataRegs.GPASET.bit.GPIO29 = 1;     // uncomment if --> Set High initially
     //--------------------------------------------------------------------------------------
-    //  GPIO-30 - PIN FUNCTION = TP5
+    //  GPIO-30 - PIN FUNCTION = ELOAD_SEL
         GpioCtrlRegs.GPAMUX2.bit.GPIO30 = 0;    // 0=GPIO,  1=CANRX-A,  2=Resv,  3=Resv
-        GpioCtrlRegs.GPADIR.bit.GPIO30 = 0;     // 1=OUTput,  0=INput
-    //  GpioDataRegs.GPACLEAR.bit.GPIO30 = 1;   // uncomment if --> Set Low initially
+        GpioCtrlRegs.GPADIR.bit.GPIO30 = 1;     // 1=OUTput,  0=INput
+        GpioDataRegs.GPACLEAR.bit.GPIO30 = 1;   // uncomment if --> Set Low initially
     //  GpioDataRegs.GPASET.bit.GPIO30 = 1;     // uncomment if --> Set High initially
     //--------------------------------------------------------------------------------------
     //  GPIO-31 - PIN FUNCTION = TP4
