@@ -84,6 +84,7 @@
 //
 // Prototype statements
 //
+void init();
 #ifdef ADC_ENABLE
 void configure_adc();
 __interrupt void adcint1_isr(void);
@@ -185,6 +186,30 @@ void scia_msg(char * msg);
 // Main
 //
 void main(void)
+{
+    init();
+
+    for(;;)
+    {
+#ifdef TASK_SCHEDULER_ENABLE
+        // State machine entry & exit point
+        //===========================================================
+        (*Alpha_State_Ptr)();   // jump to an Alpha state (A0,B0,...)
+        //===========================================================
+#endif
+    }
+}
+
+void MemCopy(Uint16 *SourceAddr, Uint16* SourceEndAddr, Uint16* DestAddr)
+{
+    while(SourceAddr < SourceEndAddr)
+    {
+       *DestAddr++ = *SourceAddr++;
+    }
+    return;
+}
+
+void init()
 {
 #ifdef UART_ENABLE
     char *uart_msg;
@@ -393,10 +418,10 @@ void main(void)
     // 5V2 A & B: 5.2Vout, duty cycle = 5.2/12 = 43.3%... period = 240, CMPA = 104
     // SEPIC: 6Vout, duty cycle = (vo/vi) / (1+vo/vi) = (6/12)/(1+6/12) = 33.3%... period = 240, CMPA = 80
 
-    EPwm1Regs.CMPA.half.CMPA = 3000;    // 3000/6000 = 50% duty cycle @ 10kHz
-    EPwm2Regs.CMPA.half.CMPA = 30;      // 30/60 = 50% duty cycle @ 1MHz
-    EPwm3Regs.CMPA.half.CMPA = 30;
-    EPwm4Regs.CMPA.half.CMPA = 80;      // 80/240 = 33.3% @ 250kHz
+    EPwm1Regs.CMPA.half.CMPA = DUTY_ELOAD;//    3000;    // 3000/6000 = 50% duty cycle @ 10kHz
+    EPwm2Regs.CMPA.half.CMPA = DUTY_5V2A;//30;      // 30/60 = 50% duty cycle @ 1MHz
+    EPwm3Regs.CMPA.half.CMPA = DUTY_5V2B;//30;
+    EPwm4Regs.CMPA.half.CMPA = DUTY_SEPIC;//80;      // 80/240 = 33.3% @ 250kHz
 
     EDIS;
 #endif
@@ -455,25 +480,6 @@ void main(void)
         adc_array_B7[i] = 0;
     }
 
-
-    for(;;)
-    {
-#ifdef TASK_SCHEDULER_ENABLE
-        // State machine entry & exit point
-        //===========================================================
-        (*Alpha_State_Ptr)();   // jump to an Alpha state (A0,B0,...)
-        //===========================================================
-#endif
-    }
-}
-
-void MemCopy(Uint16 *SourceAddr, Uint16* SourceEndAddr, Uint16* DestAddr)
-{
-    while(SourceAddr < SourceEndAddr)
-    {
-       *DestAddr++ = *SourceAddr++;
-    }
-    return;
 }
 
 void init_gpio()
