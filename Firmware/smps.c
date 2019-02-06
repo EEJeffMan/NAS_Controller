@@ -106,8 +106,9 @@ void init_smps()
     EPwm1Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;
     EPwm1Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;
 
-    EPwm1Regs.AQCTLA.bit.ZRO = AQ_SET;          // PWM toggle high/low
-    EPwm1Regs.AQCTLA.bit.CAU = AQ_CLEAR;
+    // PWM1B
+    EPwm1Regs.AQCTLB.bit.ZRO = AQ_SET;          // PWM toggle high/low
+    EPwm1Regs.AQCTLB.bit.CAU = AQ_CLEAR;
 
     // ADC SOCA
     EPwm1Regs.ETSEL.bit.SOCAEN = 1;                 // enable SOCA

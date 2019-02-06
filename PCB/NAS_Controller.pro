@@ -1,4 +1,4 @@
-update=12/12/2018 3:43:31 PM
+update=1/30/2019 10:50:10 PM
 version=1
 last_client=kicad
 [pcbnew]
@@ -23,6 +23,18 @@ ModuleOutlineThickness=0.150000000000
 [cvpcb]
 version=1
 NetIExt=net
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=./
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=Pcbnew
+SpiceForceRefPrefix=0
+SpiceUseNetNumbers=0
+LabSize=60
+[general]
+version=1
 [eeschema]
 version=1
 LibDir=C:/KiCAD/share/kicad/library;C:/KiCAD/digikey-kicad-library-master/digikey-symbols
@@ -281,15 +293,5 @@ LibName251=C:/KiCAD/Libraries/1-1825027-1
 LibName252=C:/KiCAD/Libraries/105133-0011
 LibName253=C:/KiCAD/Libraries/614008235023
 LibName254=C:/KiCAD/Libraries/CL-SB-23A-01
-[schematic_editor]
-version=1
-PageLayoutDescrFile=
-PlotDirectoryName=./
-SubpartIdSeparator=0
-SubpartFirstId=65
-NetFmtName=Pcbnew
-SpiceForceRefPrefix=0
-SpiceUseNetNumbers=0
-LabSize=60
-[general]
-version=1
+LibName255=C:/KiCad/Libraries/buq2-kicad-components
+LibName256=C:/KiCad/Libraries/LED
