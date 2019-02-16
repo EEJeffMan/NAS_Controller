@@ -19,16 +19,22 @@ void init_smps()
      * GPIO4, 3A: PWM_5V2_B
      * GPIO6, 4A: PWM_SEPIC
      */
-
+#ifdef PWM_ENABLE_ELOAD
     GpioCtrlRegs.GPAPUD.bit.GPIO1 = 1;    // Disable pull-up on GPIO1 (EPWM1B)
     GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;   // Configure GPIO1 as EPWM1B
+#endif
+#ifdef PWM_ENABLE_5V2A
     GpioCtrlRegs.GPAPUD.bit.GPIO2 = 1;    // Disable pull-up on GPIO2 (EPWM2A)
     GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 1;   // Configure GPIO2 as EPWM2A
+#endif
+#ifdef PWM_ENABLE_5V2B
     GpioCtrlRegs.GPAPUD.bit.GPIO4 = 1;    // Disable pull-up on GPIO4 (EPWM3A)
     GpioCtrlRegs.GPAMUX1.bit.GPIO4 = 1;   // Configure GPIO4 as EPWM3A
+#endif
+#ifdef PWM_ENABLE_SEPIC
     GpioCtrlRegs.GPAPUD.bit.GPIO6 = 1;    // Disable pull-up on GPIO6 (EPWM4A)
     GpioCtrlRegs.GPAMUX1.bit.GPIO6 = 1;   // Configure GPIO6 as EPWM4A
-
+#endif
     /*
      * ePWM registers:
      *
@@ -86,7 +92,7 @@ void init_smps()
      */
 
     // ELOAD
-
+#ifdef PWM_ENABLE_ELOAD
     EPwm1Regs.TBCTL.bit.FREE_SOFT = 1;      // allow free run when CPU halted
     EPwm1Regs.TBPRD = ELOAD_PERIOD;
     //EPwm1Regs.TBPRDHR =
@@ -120,9 +126,9 @@ void init_smps()
     EPwm1Regs.HRCNFG.bit.EDGMODE = HR_FEP;        // MEP control on falling edge
     EPwm1Regs.HRCNFG.bit.CTLMODE = HR_CMP;        // Duty control mode
     EPwm1Regs.HRCNFG.bit.HRLOAD  = HR_CTR_ZERO;   // Load on CTR = 0
-
+#endif
     // 5V2_A
-
+#ifdef PWM_ENABLE_5V2A
     EPwm2Regs.TBCTL.bit.FREE_SOFT = 1;      // allow free run when CPU halted
     EPwm2Regs.TBPRD = PERIOD_5V2_A;
     //EPwm2Regs.TBPRDHR =
@@ -149,9 +155,9 @@ void init_smps()
     EPwm2Regs.HRCNFG.bit.EDGMODE = HR_FEP;        // MEP control on falling edge
     EPwm2Regs.HRCNFG.bit.CTLMODE = HR_CMP;        // Duty control mode
     EPwm2Regs.HRCNFG.bit.HRLOAD  = HR_CTR_ZERO;   // Load on CTR = 0
-
+#endif
     // 5V2_B
-
+#ifdef PWM_ENABLE_5V2B
     EPwm3Regs.TBCTL.bit.FREE_SOFT = 1;      // allow free run when CPU halted
     EPwm3Regs.TBPRD = PERIOD_5V2_B;
     //EPwm3Regs.TBPRDHR =
@@ -178,9 +184,9 @@ void init_smps()
     EPwm3Regs.HRCNFG.bit.EDGMODE = HR_FEP;        // MEP control on falling edge
     EPwm3Regs.HRCNFG.bit.CTLMODE = HR_CMP;        // Duty control mode
     EPwm3Regs.HRCNFG.bit.HRLOAD  = HR_CTR_ZERO;   // Load on CTR = 0
-
+#endif
     // SEPIC
-
+#ifdef PWM_ENABLE_SEPIC
     EPwm4Regs.TBCTL.bit.FREE_SOFT = 1;      // allow free run when CPU halted
     EPwm4Regs.TBPRD = SEPIC_PERIOD;
     //EPwm4Regs.TBPRDHR =
@@ -207,7 +213,7 @@ void init_smps()
     EPwm4Regs.HRCNFG.bit.EDGMODE = HR_FEP;        // MEP control on falling edge
     EPwm4Regs.HRCNFG.bit.CTLMODE = HR_CMP;        // Duty control mode
     EPwm4Regs.HRCNFG.bit.HRLOAD  = HR_CTR_ZERO;   // Load on CTR = 0
-
+#endif
     //EDIS should be asserted after function call
 }
 
