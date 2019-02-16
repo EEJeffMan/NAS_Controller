@@ -65,9 +65,9 @@ void init_gpio()
     //--------------------------------------------------------------------------------------
     //  GPIO-02 - PIN FUNCTION = PWM2A (5V2_A)
         GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 0;     // 0=GPIO,  1=EPWM2A,  2=Resv,  3=Resv
-        GpioCtrlRegs.GPADIR.bit.GPIO2 = 0;      // 1=OUTput,  0=INput
+        GpioCtrlRegs.GPADIR.bit.GPIO2 = 1;      // 1=OUTput,  0=INput
     //  GpioDataRegs.GPACLEAR.bit.GPIO2 = 1;    // uncomment if --> Set Low initially
-    //  GpioDataRegs.GPASET.bit.GPIO2 = 1;      // uncomment if --> Set High initially
+        GpioDataRegs.GPASET.bit.GPIO2 = 1;      // uncomment if --> Set High initially
 #endif
     //--------------------------------------------------------------------------------------
     //  GPIO-03 - PIN FUNCTION = Digital out (PI_RST_OUT)
@@ -86,9 +86,9 @@ void init_gpio()
     //--------------------------------------------------------------------------------------
     //  GPIO-04 - PIN FUNCTION = PWM3A (5V2_B)
         GpioCtrlRegs.GPAMUX1.bit.GPIO4 = 0;     // 0=GPIO,  1=EPWM3A,  2=Resv,  3=Resv
-        GpioCtrlRegs.GPADIR.bit.GPIO4 = 0;      // 1=OUTput,  0=INput
+        GpioCtrlRegs.GPADIR.bit.GPIO4 = 1;      // 1=OUTput,  0=INput
     //  GpioDataRegs.GPACLEAR.bit.GPIO4 = 1;    // uncomment if --> Set Low initially
-    //  GpioDataRegs.GPASET.bit.GPIO4 = 1;      // uncomment if --> Set High initially
+        GpioDataRegs.GPASET.bit.GPIO4 = 1;      // uncomment if --> Set High initially
 #endif
     //--------------------------------------------------------------------------------------
     //  GPIO-05 - PIN FUNCTION = Fan feedback (Ecap?)

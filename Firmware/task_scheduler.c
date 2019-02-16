@@ -142,6 +142,8 @@ void B2(void) // B2
     AdcRegs.ADCSOCFRC1.bit.SOC14 = 1;
     EDIS;*/
 
+    set_LED(LED_GREEN, LED_TOGGLE);
+
     //-----------------
     //the next time CpuTimer1 'counter' reaches Period value go to B3
     B_Task_Ptr = &B3;
