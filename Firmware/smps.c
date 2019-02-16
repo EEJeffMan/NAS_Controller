@@ -10,7 +10,22 @@
 
 void init_smps()
 {
-    //EALLOW must be asserted prior to function call
+    EALLOW;
+    SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 0;
+/*    EDIS;
+    EPwm1Regs.ETSEL.bit.SOCAEN  = 1;    // Enable SOC on A group
+    EPwm1Regs.ETSEL.bit.SOCASEL = 4;    // Select SOC from from CPMA on upcount
+    EPwm1Regs.ETPS.bit.SOCAPRD  = 1;    // Generate pulse on 1st event
+    EPwm1Regs.CMPA.half.CMPA = 0x2EE;   // Set compare A value
+
+    //
+    // Set period for ePWM1 - this will determine the sampling frequency(20KHz)
+    //
+    EPwm1Regs.TBPRD = 0x5DC;
+
+    EPwm1Regs.TBCTL.bit.CTRMODE     = 0;        // count up and start
+    EALLOW;
+    SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 1;*/
 
     /*
      * HWPWM pins:
@@ -214,7 +229,21 @@ void init_smps()
     EPwm4Regs.HRCNFG.bit.CTLMODE = HR_CMP;        // Duty control mode
     EPwm4Regs.HRCNFG.bit.HRLOAD  = HR_CTR_ZERO;   // Load on CTR = 0
 #endif
-    //EDIS should be asserted after function call
+
+    SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 1;
+
+    //initialize duty cycles to test supplies
+    // Vaux: 5.5Vout; duty cycle = 5.5/12 = 45.8%... period = 240, CMPA = 110
+    // 5V2 A & B: 5.2Vout, duty cycle = 5.2/12 = 43.3%... period = 240, CMPA = 104
+    // SEPIC: 6Vout, duty cycle = (vo/vi) / (1+vo/vi) = (6/12)/(1+6/12) = 33.3%... period = 240, CMPA = 80
+
+    EPwm1Regs.CMPA.half.CMPA = DUTY_ELOAD;//    3000;    // 3000/6000 = 50% duty cycle @ 10kHz
+    EPwm2Regs.CMPA.half.CMPA = DUTY_5V2A;//30;      // 30/60 = 50% duty cycle @ 1MHz
+    EPwm3Regs.CMPA.half.CMPA = DUTY_5V2B;//30;
+    EPwm4Regs.CMPA.half.CMPA = DUTY_SEPIC;//80;      // 80/240 = 33.3% @ 250kHz
+
+    EDIS;
+
 }
 
 

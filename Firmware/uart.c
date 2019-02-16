@@ -8,6 +8,7 @@
 #include "DSP2803x_Device.h"     // DSP2803x Headerfile Include File
 #include "DSP2803x_Examples.h"   // DSP2803x Examples Include File
 #include "uart.h"
+#include "main.h"
 
 #include "sci.h"
 
