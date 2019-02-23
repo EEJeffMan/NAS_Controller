@@ -2,3 +2,4 @@
 /Firmware/.launches/*
 /Spice/*.raw
 /Spice/*.log
+/Spice/*.net
