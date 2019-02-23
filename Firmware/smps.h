@@ -20,7 +20,7 @@
 #define PERIOD_5V2_B        60      // period = TBCLK period * VAUX_PERIOD... 60 = 1MHz
 #define SEPIC_PERIOD        240     // period = TBCLK period * VAUX_PERIOD... 240 = 250kHz
 
-#define DUTY_ELOAD          450     // 540/600 = 90% duty cycle @ 100kHz
+#define DUTY_ELOAD          6       // 6/600 = 1% duty cycle @ 100kHz... PWM in ELOAD will be inverse of this.
 #define DUTY_5V2A           30      // 30/60 = 50% duty cycle @ 1MHz
 #define DUTY_5V2B           30      //
 #define DUTY_SEPIC          80      // 80/240 = 33.3% @ 250kHz

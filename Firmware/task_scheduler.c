@@ -154,6 +154,8 @@ void B2(void) // B2
 void B3(void) // B3
 //----------------------------------------
 {
+    // after 150ms, set eload to constant current mode.
+    GpioDataRegs.GPACLEAR.bit.GPIO30 = 1;
 
     //-----------------
     //the next time CpuTimer1 'counter' reaches Period value go to B4

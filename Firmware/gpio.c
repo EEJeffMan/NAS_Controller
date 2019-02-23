@@ -37,8 +37,8 @@ void init_gpio()
     //--------------------------------------------------------------------------------------
     //  GPIO-01 - PIN FUNCTION = ELOAD_PWM
         GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;     // 0=GPIO,  1=EPWM1B,  2=Resv,  3=COMP1OUT
-    //  GpioCtrlRegs.GPADIR.bit.GPIO1 = 1;      // 1=OUTput,  0=INput
-    //  GpioDataRegs.GPACLEAR.bit.GPIO1 = 1;    // uncomment if --> Set Low initially
+        GpioCtrlRegs.GPADIR.bit.GPIO1 = 1;      // 1=OUTput,  0=INput
+        GpioDataRegs.GPACLEAR.bit.GPIO1 = 1;    // uncomment if --> Set Low initially
     //  GpioDataRegs.GPASET.bit.GPIO1 = 1;      // uncomment if --> Set High initially
 #else
     //--------------------------------------------------------------------------------------
@@ -263,8 +263,8 @@ void init_gpio()
     //  GPIO-30 - PIN FUNCTION = ELOAD_SEL
         GpioCtrlRegs.GPAMUX2.bit.GPIO30 = 0;    // 0=GPIO,  1=CANRX-A,  2=Resv,  3=Resv
         GpioCtrlRegs.GPADIR.bit.GPIO30 = 1;     // 1=OUTput,  0=INput
-        GpioDataRegs.GPACLEAR.bit.GPIO30 = 1;   // uncomment if --> Set Low initially
-    //  GpioDataRegs.GPASET.bit.GPIO30 = 1;     // uncomment if --> Set High initially
+    //  GpioDataRegs.GPACLEAR.bit.GPIO30 = 1;   // uncomment if --> Set Low initially
+        GpioDataRegs.GPASET.bit.GPIO30 = 1;     // uncomment if --> Set High initially
     //--------------------------------------------------------------------------------------
     //  GPIO-31 - PIN FUNCTION = TP4
         GpioCtrlRegs.GPAMUX2.bit.GPIO31 = 0;    // 0=GPIO,  1=CANTX-A,  2=Resv,  3=Resv
