@@ -237,10 +237,10 @@ void init_smps()
     // 5V2 A & B: 5.2Vout, duty cycle = 5.2/12 = 43.3%... period = 240, CMPA = 104
     // SEPIC: 6Vout, duty cycle = (vo/vi) / (1+vo/vi) = (6/12)/(1+6/12) = 33.3%... period = 240, CMPA = 80
 
-    EPwm1Regs.CMPA.half.CMPA = DUTY_ELOAD;//    3000;    // 3000/6000 = 50% duty cycle @ 10kHz
-    EPwm2Regs.CMPA.half.CMPA = DUTY_5V2A;//30;      // 30/60 = 50% duty cycle @ 1MHz
-    EPwm3Regs.CMPA.half.CMPA = DUTY_5V2B;//30;
-    EPwm4Regs.CMPA.half.CMPA = DUTY_SEPIC;//80;      // 80/240 = 33.3% @ 250kHz
+    EPwm1Regs.CMPA.half.CMPA = DUTY_ELOAD;
+    EPwm2Regs.CMPA.half.CMPA = DUTY_5V2A;
+    EPwm3Regs.CMPA.half.CMPA = DUTY_5V2B;
+    EPwm4Regs.CMPA.half.CMPA = DUTY_SEPIC;
 
     EDIS;
 

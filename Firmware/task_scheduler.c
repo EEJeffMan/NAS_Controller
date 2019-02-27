@@ -8,6 +8,7 @@
 #include "task_scheduler.h"
 #include "DSP28x_Project.h"
 #include "leds.h"
+#include "smps.h"
 
 int VTimer0[4];                   // Virtual Timers slaved off CPU Timer 0
 int VTimer1[4];                   // Virtual Timers slaved off CPU Timer 1
@@ -154,8 +155,8 @@ void B2(void) // B2
 void B3(void) // B3
 //----------------------------------------
 {
-    // after 150ms, set eload to constant current mode.
-    GpioDataRegs.GPACLEAR.bit.GPIO30 = 1;
+    // after 150ms, set eload to constant current mode, and start PWM.
+    //GpioDataRegs.GPACLEAR.bit.GPIO30 = 1;
 
     //-----------------
     //the next time CpuTimer1 'counter' reaches Period value go to B4
