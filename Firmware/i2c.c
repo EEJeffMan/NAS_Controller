@@ -11,30 +11,22 @@
 #include "main.h"
 
 void I2CA_Init(void);
-uint16_t I2CA_WriteData(struct I2CMSG *msg);
-Uint16 I2CA_ReadData(struct I2CMSG *msg);
+Uint16 I2CA_WriteData(struct I2CMSG *msg);
+Uint16 I2CA_ReadData(struct I2CMSG *msg, Uint16 command);
 __interrupt void i2c_int1a_isr(void);
 
-#define I2C_SLAVE_ADDR        0x50
-#define I2C_NUMBYTES          2
-#define I2C_EEPROM_HIGH_ADDR  0x00
-#define I2C_EEPROM_LOW_ADDR   0x30
+volatile Uint16 i2c_output_p0;
+volatile Uint16 i2c_output_p1;
 
-//
-// Two bytes will be used for the outgoing address,
-// thus only setup 14 bytes maximum
-//
-struct I2CMSG I2cMsgOut1=
-{
-    I2C_MSGSTAT_SEND_WITHSTOP,
-    I2C_SLAVE_ADDR,
-    I2C_NUMBYTES,
-    I2C_EEPROM_HIGH_ADDR,
-    I2C_EEPROM_LOW_ADDR,
-    0x12,     // Msg Byte 1
-    0x34      // Msg Byte 2
-};
+/*
+ * PCA6416A data write:
+ *  1. Address & R/nW bit (0 for write)
+ *  2. Command byte
+ *  3. Data byte 1
+ *  4. Data byte 2
+*/
 
+/*
 struct I2CMSG I2cMsgIn1=
 {
     I2C_MSGSTAT_SEND_NOSTOP,
@@ -42,7 +34,30 @@ struct I2CMSG I2cMsgIn1=
     I2C_NUMBYTES,
     I2C_EEPROM_HIGH_ADDR,
     I2C_EEPROM_LOW_ADDR
-};
+};*/
+
+//struct I2CMSG_NAS *CurrentMsgPtr;       // Used in interrupts
+
+
+
+struct I2CMSG_NAS *CurrentMsgPtr_NAS;       // Used in interrupts
+
+// Global variables
+// Two bytes will be used for the outgoing address,
+// thus only setup 14 bytes maximum
+struct I2CMSG I2cMsgOut1={I2C_MSGSTAT_SEND_WITHSTOP,
+                          I2C_SLAVE_ADDR,
+                          I2C_NUMBYTES,
+                          I2C_EEPROM_HIGH_ADDR,
+                          I2C_EEPROM_LOW_ADDR,
+                          0x12,                   // Msg Byte 1
+                          0x34};                  // Msg Byte 2
+
+struct I2CMSG I2cMsgIn1={ I2C_MSGSTAT_SEND_NOSTOP,
+                          I2C_SLAVE_ADDR,
+                          I2C_NUMBYTES,
+                          I2C_EEPROM_HIGH_ADDR,
+                          I2C_EEPROM_LOW_ADDR};
 
 struct I2CMSG *CurrentMsgPtr;       // Used in interrupts
 
@@ -52,7 +67,15 @@ struct I2CMSG *CurrentMsgPtr;       // Used in interrupts
 void
 I2CA_Init(void)
 {
-    I2caRegs.I2CSAR = 0x0050;       // Slave address - EEPROM control code
+    Uint16 i;
+
+    // Interrupts that are used in this example are re-mapped to
+    // ISR functions found within this file.
+       EALLOW;  // This is needed to write to EALLOW protected registers
+       PieVectTable.I2CINT1A = &i2c_int1a_isr;
+       EDIS;   // This is needed to disable write to EALLOW protected registers
+
+    I2caRegs.I2CSAR = I2C_SLAVE_ADDR;       // Slave address - EEPROM control code
 
     I2caRegs.I2CPSC.all = 6;        // Prescaler - need 7-12 Mhz on module clk
     I2caRegs.I2CCLKL = 10;          // NOTE: must be non zero
@@ -83,14 +106,13 @@ I2CA_Init(void)
     //
     IER |= M_INT8;
 
-    return;
+    //return;
 }
 
 //
 // I2CA_WriteData -
 //
-Uint16
-I2CA_WriteData(struct I2CMSG *msg)
+Uint16 I2CA_WriteData(struct I2CMSG *msg)
 {
     Uint16 i;
 
@@ -120,15 +142,16 @@ I2CA_WriteData(struct I2CMSG *msg)
 
     //
     // Setup number of bytes to send
-    // MsgBuffer + Address
+    // MsgBuffer
     //
-    I2caRegs.I2CCNT = msg->NumOfBytes+2;
+    I2caRegs.I2CCNT = msg->NumOfBytes;
 
     //
     // Setup data to send
     //
-    I2caRegs.I2CDXR = msg->MemoryHighAddr;
-    I2caRegs.I2CDXR = msg->MemoryLowAddr;
+
+    //I2caRegs.I2CDXR = msg->MemoryHighAddr;
+    //I2caRegs.I2CDXR = msg->MemoryLowAddr;
 
     //
     // for (i=0; i<msg->NumOfBytes-2; i++)
@@ -149,8 +172,7 @@ I2CA_WriteData(struct I2CMSG *msg)
 //
 // I2CA_ReadData - Reads I2CA data
 //
-Uint16
-I2CA_ReadData(struct I2CMSG *msg)
+Uint16 I2CA_ReadData(struct I2CMSG *msg, Uint16 command)
 {
     //
     // Wait until STP bit is cleared from any previous master communication.
@@ -175,9 +197,10 @@ I2CA_ReadData(struct I2CMSG *msg)
             return I2C_BUS_BUSY_ERROR;
         }
 
-        I2caRegs.I2CCNT = 2;
-        I2caRegs.I2CDXR = msg->MemoryHighAddr;
-        I2caRegs.I2CDXR = msg->MemoryLowAddr;
+        I2caRegs.I2CCNT = 1;
+        I2caRegs.I2CDXR = command;
+        //I2caRegs.I2CDXR = msg->MemoryHighAddr;
+        //I2caRegs.I2CDXR = msg->MemoryLowAddr;
         I2caRegs.I2CMDR.all = 0x2620;   // Send data to setup EEPROM address
     }
 
@@ -237,36 +260,9 @@ i2c_int1a_isr(void)
             {
                 CurrentMsgPtr->MsgStatus = I2C_MSGSTAT_INACTIVE;
 
-                for(i=0; i < I2C_NUMBYTES; i++)
+                for(i=0; i < I2C_NUMBYTES_READ; i++)
                 {
                     CurrentMsgPtr->MsgBuffer[i] = I2caRegs.I2CDRR;
-                }
-
-                {
-                    //
-                    // Check received data
-                    //
-                    for(i=0; i < I2C_NUMBYTES; i++)
-                    {
-                        if(I2cMsgIn1.MsgBuffer[i] == I2cMsgOut1.MsgBuffer[i])
-                        {
-                            PassCount++;
-                        }
-                        else
-                        {
-                            FailCount++;
-                        }
-                    }
-
-                    if(PassCount == I2C_NUMBYTES)
-                    {
-                        pass();
-                    }
-
-                    else
-                    {
-                        fail();
-                    }
                 }
             }
         }

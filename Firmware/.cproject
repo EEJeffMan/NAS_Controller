@@ -93,7 +93,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="i2c.c|CLA.asm|28035_RAM_CLA_lnk.cmd|28035_RAM_lnk.cmd|sci_io.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="CLA.asm|28035_RAM_CLA_lnk.cmd|28035_RAM_lnk.cmd|sci_io.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
