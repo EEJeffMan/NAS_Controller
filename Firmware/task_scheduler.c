@@ -59,6 +59,48 @@ void B0(void) {
 void A1(void)
 //--------------------------------------------------------
 {
+    /* PCA6416
+     *
+     * Writes:
+     *      Output (both ports)
+     *      Polarity inversion (both ports)
+     *      Configuration (both ports)
+     *
+     * state machine:
+     *      0: set outputs
+     *      1: set configuration
+     *      2: read inputs
+     *
+     * initial bring-up: read inputs P0_2 and P1_7
+     *      0: if Out.Status == inactive
+     *          if In.Status == Send no stop
+     *              Read_Data(...)
+     *              In1.Status = Sen no stop busy
+     *      1:
+     *
+     */
+
+    Uint16 pca6416_state;
+
+    switch (pca6416_state)
+    {
+    case 0:
+
+        break;
+
+    case 1:
+
+        break;
+
+    case 2:
+
+        break;
+
+    default:
+
+        break;
+    }
+
 
     //-------------------
     //the next time CpuTimer0 'counter' reaches Period value go to A2
